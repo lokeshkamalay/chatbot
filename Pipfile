@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+streamlit = "*"
+requests = "*"
+streamlit-oauth = "*"
+ollama = "*"
+pydantic = "*"
+fastapi = "*"
+structlog = "*"
+uvicorn = "*"
+langchain = "*"
+langchain-core = "*"
+chroma = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
