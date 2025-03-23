@@ -15,6 +15,13 @@ uvicorn = "*"
 langchain = "*"
 langchain-core = "*"
 chroma = "*"
+psycopg2-binary = "*"
+langchain-chroma = "*"
+langchain-community = "*"
+langchain-huggingface = "*"
+unstructured = "*"
+markdown = "*"
+langchain-ollama = "*"
 
 [dev-packages]
 

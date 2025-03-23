@@ -19,8 +19,15 @@ class Message(BaseModel):
     avatar: str = None
     user: str
 
+# class QueryInput(BaseModel):
+#     username: str
+#     messages: List[Dict[str, str]] = Field(default_factory=list)
+#     session_id: str = Field(default=None)
+#     model: ModelName = Field(default=ModelName.OLAMA_32)
+
 class QueryInput(BaseModel):
-    messages: List[Dict[str, str]] = Field(default_factory=list)
+    username: str
+    messages: str
     session_id: str = Field(default=None)
     model: ModelName = Field(default=ModelName.OLAMA_32)
 

@@ -24,6 +24,8 @@ if "github_user" not in st.session_state:
     st.session_state.setdefault("github_user", None)
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "session_id" not in st.session_state:
+    st.session_state.session_id = ""
 
 # Create OAuth2Component instance
 oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, None, REVOKE_TOKEN_URL)
@@ -75,6 +77,12 @@ if not st.session_state.token:
             st.success(f"Welcome, {user_info['login']}! 🎉")
             if validate_user(st.session_state.token):
                 st.session_state.github_user = user_info
+                st.session_state.messages.append({
+                    "user": "bot", 
+                    "avatar":"https://avatars.githubusercontent.com/u/28813424?s=48&v=4", 
+                    "role": "assistant", 
+                    "content": f"Hello {user_info['name']}! How can I assist you today? for best results please include the tool/technology name you need help with like github cloudsmith artifactory"
+                })
             else:
                 st.markdown(f"<h1 style='color: red;'>🚫 User {user_info['login']} is not authorized to access this bot<br/><br/>Contact DTE for help</h1>", unsafe_allow_html=True)
                 st.stop()
@@ -117,14 +125,20 @@ if st.session_state.github_user is not None:
             st.markdown(prompt)
         st.session_state["full_message"] = ""
         data = {
-            "messages": st.session_state.messages,
+            "username": st.session_state.github_user['login'],
+            # "messages": st.session_state.messages,
+            "messages": prompt,
             "model": "llama3.2",
-            "session_id": ""  # You might want to change this to a unique session ID
+            "session_id": st.session_state.session_id
         }
         with st.spinner("Generating response..."):
             response_placeholder = st.empty()
             response = requests.post("http://localhost:3100/api/v1/chat", json=data, stream=True)
             response_text = ""
+            
+            if st.session_state.session_id == "":
+                st.session_state.session_id = response.headers.get("X-Session-ID")
+
             with st.chat_message("bot", avatar="https://avatars.githubusercontent.com/u/28813424?s=48&v=4"):
                 response_container = st.empty()
                 for chunk in response.iter_content(chunk_size=1024):
