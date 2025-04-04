@@ -3,7 +3,7 @@ import structlog
 from typing import Any, Annotated
 from fastapi import APIRouter, Body, Depends, Request, HTTPException
 from services.chat_service import ChatService
-from models.models import QueryResponse, QueryInput
+from models.models import QueryResponse, QueryInput, ResponseUserSessions, ResponseSessionChatHistory
 from pydantic import ValidationError
 from fastapi.responses import StreamingResponse
 import utils.db_utils as db_utils
@@ -53,13 +53,32 @@ async def chat(
     except Exception as e:
         print(f"Error during chat processing:\n {e}")
     
-    
+@router.get("/chat/usersessions/{username}", response_model=ResponseUserSessions)
+async def get_user_sessions(
+    username: str = None,
+) -> ResponseUserSessions:
+    """
+    Retrieve chat history for a specific user and session.
+    """
+    try:
+        sessions = db_utils.get_user_sessions(username)
+        return ResponseUserSessions(sessions=sessions)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
-    # response_text = ""
-    # for chunk in service.chat_with_llama(query_input.messages):
-    #     response_text += chunk
-    # # response = service.chat_with_llama(query_input.messages)
-    # print("************")
-    # print(response_text)
-    # return QueryResponse(answer=response_text, session_id=query_input.session_id, model=query_input.model)
-
+@router.get("/chat/sessionhistory/{session_id}", response_model=ResponseSessionChatHistory)
+async def get_session_messages(
+    session_id: str,
+) -> ResponseSessionChatHistory:
+    """
+    Retrieve chat messages for a specific session.
+    """
+    try:
+        messages = db_utils.get_session_messages(session_id)
+        return ResponseSessionChatHistory(messages=messages)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")

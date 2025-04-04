@@ -45,3 +45,20 @@ class DocumentInfo(BaseModel):
 
 class DeleteFileRequest(BaseModel):
     file_id: int
+
+class RequestUserSessions(BaseModel):
+    username: str = Field(default=None) 
+
+class SessionInfo(BaseModel):
+    message: str
+    session_id: str
+    last_active: datetime
+
+class ResponseUserSessions(BaseModel):
+    sessions: List[SessionInfo] = Field(default_factory=list)
+
+class RequestSessionChatHistory(BaseModel):
+    session_id: str
+
+class ResponseSessionChatHistory(BaseModel):
+    messages: List[Dict[str, str]] = Field(default_factory=list)

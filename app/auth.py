@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import ollama
 import json
 import time
+import sidebar as sb
 load_dotenv()
 
 # Set environment variables
@@ -15,7 +16,7 @@ REVOKE_TOKEN_URL = "https://api.github.com/applications/Ov23linJ4cYBvaWeEyw2/tok
 CLIENT_ID = "Ov23linJ4cYBvaWeEyw2"
 CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")  # Use .env for secrets
 REDIRECT_URI = "http://localhost:8501/component/streamlit_oauth.authorize_button/index.html"
-SCOPE = "user"
+SCOPE = "user read:org"
 ALLOWED_ORG = "suvofficial"
 
 if "token" not in st.session_state:
@@ -30,11 +31,11 @@ if "session_id" not in st.session_state:
 # Create OAuth2Component instance
 oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, None, REVOKE_TOKEN_URL)
 # Sidebar
-st.sidebar.title("Loki's chatbot")
-st.sidebar.header("Useful Links")
-st.sidebar.markdown("[Home](http://localhost:8501)")
-st.sidebar.markdown("[About](http://localhost:8501/about)")
-st.sidebar.markdown("[Contact](http://localhost:8501/contact)")
+# st.sidebar.title("Loki's chatbot")
+# st.sidebar.header("Useful Links")
+# st.sidebar.markdown("[Home](http://localhost:8501)")
+# st.sidebar.markdown("[About](http://localhost:8501/about)")
+# st.sidebar.markdown("[Contact](http://localhost:8501/contact)")
 # st.sidebar.button("Logout", on_click=lambda: st.session_state.clear())  # Clear session state on Logout button
 
 st.title("Loki's chatbot")
@@ -100,12 +101,7 @@ if "logout_triggered" in st.session_state:
 
 if st.session_state.github_user is not None:
     st.subheader(f"Welcome, {st.session_state.github_user['login']}! 🎉")
-    if st.sidebar.button("Logout"):
-        del st.session_state.token
-        del st.session_state.github_user
-        del st.session_state.messages
-        st.session_state["logout_triggered"] = True
-        st.rerun()
+    sb.sidebar(st.session_state.github_user['login'])
 
     for message in st.session_state.messages:
         with st.chat_message(message["user"], avatar=message.get("avatar")):

@@ -15,28 +15,19 @@ import os
 
 load_dotenv()
 
-retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
-
+retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
 output_parser = StrOutputParser()
 
 # Set up prompts and chains
-# contextualize_q_system_prompt = (
-#     "Given a chat history and the latest user question "
-#     "which might reference context in the chat history, "
-#     "formulate a standalone question which can be understood "
-#     "without the chat history. Answer the question if you are aware, "
-#     "but do not include any personal information data that impacts user privacy. "
-# )
-
 contextualize_q_system_prompt = (
     "Given a chat history and the latest user question "
     "which might reference context in the chat history, "
     "formulate a standalone question which can be understood "
-    "without the chat history. Do NOT answer the question, "
-    "just reformulate it if needed and otherwise return it as is."
-    "but do not include any personal information data that impacts user privacy."
+    "without the chat history. Answer the question if you are aware, "
+    "but do not include any personal information data that impacts user privacy. "
 )
+
 
 contextualize_q_prompt = ChatPromptTemplate.from_messages([
     ("system", contextualize_q_system_prompt),

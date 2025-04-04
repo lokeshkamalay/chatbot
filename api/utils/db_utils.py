@@ -53,6 +53,41 @@ def insert_chat_history(username:str, rolename:str, session_id:str, message:str)
             cur.execute(get_parent_id)
             conn.commit()
 
+def get_user_sessions(username:str):
+    """Retrieve chat sessions for a specific user."""
+    sessions = []
+    with connect_db() as conn:
+        with conn.cursor() as cur:
+            query = f"""
+                SELECT session_id, message, created_at
+                FROM {chat_table}
+                WHERE username = '{username}'
+                AND parent_message_id IS NULL
+                AND rolename = 'user'
+                ORDER BY created_at DESC
+            """
+            cur.execute(query)
+            for row in cur.fetchall():
+                sessions.append({"session_id": row[0], "message": row[1], "last_active": row[2]})
+    return sessions
+
+
+def get_session_messages(session_id:str):
+    """Retrieve messages for a specific session."""
+    messages = []
+    with connect_db() as conn:
+        with conn.cursor() as cur:
+            query = f"""
+                SELECT rolename, message
+                FROM {chat_table}
+                WHERE session_id = '{session_id}'
+                ORDER BY id
+            """
+            cur.execute(query)
+            for row in cur.fetchall():
+                messages.append({"role": row[0], "content": row[1]})
+    return messages
+
 def get_chat_history(username:str, session_id:str):
     """Retrieve chat history from the users table."""
     messages = []
