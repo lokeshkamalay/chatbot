@@ -12,10 +12,20 @@ from utils.chroma_utils import vectorstore
 from langchain_ollama import ChatOllama 
 from dotenv import load_dotenv
 import os
-
+from langchain_core.runnables import RunnableLambda
 load_dotenv()
 
-retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+# retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+retriever = vectorstore.as_retriever(
+    search_type='similarity_score_threshold',
+    search_kwargs={"k": 3, "score_threshold": 0.5},
+)
+
+# retriever = vectorstore.as_retriever(
+#     search_type='mmr',
+#     search_kwargs={"k": 3, "fetch_k": 20, "lambda_mult": 0.5},
+# )
+
 
 output_parser = StrOutputParser()
 
@@ -41,7 +51,7 @@ def format_message(message):
     return message
 
 qa_prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are a helpful AI assistant. Use the following context to answer the user's question."),
+    ("system", "You are a helpful AI assistant. Use the following context to answer the user's question. Answer the question if you are aware but don't include any additional information apart from context.  If you don't know the answer, say 'I don't know'."),
     ("system", "Context: {context}"),
     MessagesPlaceholder(variable_name="chat_history"),
     ("user", "{input}")
@@ -58,9 +68,9 @@ def chat_with_llama(messages: List[Document] = None):
     return full_message
 
 def get_rag_chain():
-    llm = ChatOllama(model='llama3.2', stream=True)
+    llm = ChatOllama(model='llama3.2', stream=True, temperature=0, max_tokens=2000, top_p=0.1)
     history_aware_retriever = create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
     question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
-    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)    
+    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
     return rag_chain
-
+# How to convert maven github actions to cloudsmith

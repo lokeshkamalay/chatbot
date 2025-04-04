@@ -53,6 +53,21 @@ async def chat(
     except Exception as e:
         print(f"Error during chat processing:\n {e}")
     
+    
+    # rag_chain = service.get_rag_chain(query_input.model.value)
+    # answer = rag_chain.invoke({
+    #     "input": query_input.messages,
+    #     "chat_history": message_history
+    # })
+    # print("========")
+    # print(type(answer))
+    # for document in answer["context"]:
+    #     print(document)
+    #     print()
+
+    # print(f"Session ID: {query_input.session_id}, AI Response: {answer}")
+    # return QueryResponse(answer=answer['answer'], session_id=query_input.session_id, model=query_input.model)
+
 @router.get("/chat/usersessions/{username}", response_model=ResponseUserSessions)
 async def get_user_sessions(
     username: str = None,
