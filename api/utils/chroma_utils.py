@@ -7,7 +7,11 @@ from typing import List
 from langchain_core.documents import Document
 import os
 
-vectordb_path = "/Users/loki/Library/CloudStorage/GoogleDrive-lokesh.mydilse@gmail.com/My Drive/AA/MacPro/GenAI/Class28-chatbotfull/AA/vectors/chroma_db"
+# vectordb_path = "/Users/loki/Library/CloudStorage/GoogleDrive-lokesh.mydilse@gmail.com/My Drive/AA/MacPro/GenAI/Class28-chatbotfull/AA/vectors/chroma_db"
+vectordb_path = os.path.join(
+    os.getcwd(), "vectors", "chroma_db1"
+)
+print(vectordb_path)
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, length_function=len)
 model_name = "sentence-transformers/all-MiniLM-L6-v2"
 #sentence-transformers/multi-qa-mpnet-base-dot-v1 try this model as well
