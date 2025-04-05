@@ -15,7 +15,7 @@ import os
 from langchain_core.runnables import RunnableLambda
 load_dotenv()
 
-# retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+# retriever = vectorstore.as_retriever(search_kwargs={"k": 10})
 retriever = vectorstore.as_retriever(
     search_type='similarity_score_threshold',
     search_kwargs={"k": 3, "score_threshold": 0.5},
@@ -49,9 +49,16 @@ def format_message(message):
     if not message.get("system"):
         message['system'] = SystemMessage(content=contextualize_q_system_prompt)
     return message
-
+#("system", "You are a helpful AI assistant. Use the following context to answer the user's question. Answer the question if you are aware but don't include any additional information apart from context.  If you don't know the answer, say 'I don't know'."),
+qa_prompt_system = """
+    You are a helpful AI assistant.
+    Use the following context to answer the user's question. 
+    Answer the question if you are aware but don't include any additional information apart from context.
+    If the question is not clear, ask the user to clarify.
+    If you don't know the answer, say 'I don't know'.
+    """
 qa_prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are a helpful AI assistant. Use the following context to answer the user's question. Answer the question if you are aware but don't include any additional information apart from context.  If you don't know the answer, say 'I don't know'."),
+    ("system", qa_prompt_system),
     ("system", "Context: {context}"),
     MessagesPlaceholder(variable_name="chat_history"),
     ("user", "{input}")
